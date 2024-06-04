@@ -51,7 +51,7 @@ class Drop {
 }
 
 function handleDrops(time){
-  if(time - lastTime > 20000){ // Increase speed every 20 seconds
+  if(time - lastTime > 8000){ // Increase speed every 20 seconds
     dropSpeed *= 1.1;
     lastTime = time;
   }
