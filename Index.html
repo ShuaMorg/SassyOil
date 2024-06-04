@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edwyn's Sassy Oil</title>
+<style>
+  body { margin: 0; overflow: hidden; }
+  #gameCanvas { background: #f3f3f3; display: block; margin: 0 auto; }
+</style>
+</head>
+<body>
+<canvas id="gameCanvas"></canvas>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const bottleWidth = 50;
+const bottleHeight = 100;
+let bottleX = (canvas.width - bottleWidth) / 2;
+let score = 0;
+let drops = [];
+let dropSpeed = 2;
+let lastTime = 0;
+
+class Drop {
+  constructor(){
+    this.x = Math.random() * canvas.width;
+    this.y = 0;
+    this.size = 20;
+  }
+
+  draw(){
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fillStyle = '#555';
+    ctx.fill();
+  }
+
+  update(){
+    this.y += dropSpeed;
+  }
+}
+
+function handleDrops(time){
+  if(time - lastTime > 60000){ // Increase speed every minute
+    dropSpeed *= 1.1;
+    lastTime = time;
+  }
+  if(Math.random() > 0.99){
+    drops.push(new Drop());
+  }
+  for(let i = 0; i < drops.length; i++){
+    drops[i].update();
+    drops[i].draw();
+    if(drops[i].y > canvas.height){
+      drops.splice(i, 1);
+      i--;
+    } else if(drops[i].x > bottleX && drops[i].x < bottleX + bottleWidth && drops[i].y > canvas.height - bottleHeight){
+      score++;
+      drops.splice(i, 1);
+      i--;
+    }
+  }
+}
+
+function drawBottle(){
+  ctx.fillStyle = '#000';
+  ctx.fillRect(bottleX, canvas.height - bottleHeight, bottleWidth, bottleHeight);
+}
+
+function moveBottle(event){
+  bottleX = event.touches[0].clientX - bottleWidth / 2;
+}
+
+function gameLoop(timestamp){
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  handleDrops(timestamp);
+  drawBottle();
+  requestAnimationFrame(gameLoop);
+  document.getElementById('score').innerText = 'Score: ' + score;
+}
+
+canvas.addEventListener('touchmove', moveBottle);
+requestAnimationFrame(gameLoop);
+</script>
+
+<div id="score" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); font-size: 24px;">Score: 0</div>
+
+</body>
+</html>
