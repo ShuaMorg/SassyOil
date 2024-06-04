@@ -7,6 +7,7 @@
 <style>
   body { margin: 0; overflow: hidden; }
   #gameCanvas { background: #f3f3f3; display: block; margin: 0 auto; }
+  .game-over { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 48px; color: red; display: none; }
 </style>
 </head>
 <body>
@@ -25,6 +26,7 @@ let score = 0;
 let drops = [];
 let dropSpeed = 2;
 let lastTime = 0;
+let gameOver = false;
 
 class Drop {
   constructor(){
@@ -36,17 +38,20 @@ class Drop {
   draw(){
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-    ctx.fillStyle = '#555';
+    ctx.fillStyle = 'red'; // Red chilli color
     ctx.fill();
   }
 
   update(){
     this.y += dropSpeed;
+    if(this.y > canvas.height){
+      gameOver = true; // End game if chilli hits the ground
+    }
   }
 }
 
 function handleDrops(time){
-  if(time - lastTime > 60000){ // Increase speed every minute
+  if(time - lastTime > 20000){ // Increase speed every 20 seconds
     dropSpeed *= 1.1;
     lastTime = time;
   }
@@ -56,9 +61,10 @@ function handleDrops(time){
   for(let i = 0; i < drops.length; i++){
     drops[i].update();
     drops[i].draw();
-    if(drops[i].y > canvas.height){
-      drops.splice(i, 1);
-      i--;
+    if(gameOver){
+      drops = []; // Clear drops when game is over
+      displayGameOver();
+      return;
     } else if(drops[i].x > bottleX && drops[i].x < bottleX + bottleWidth && drops[i].y > canvas.height - bottleHeight){
       score++;
       drops.splice(i, 1);
@@ -76,12 +82,18 @@ function moveBottle(event){
   bottleX = event.touches[0].clientX - bottleWidth / 2;
 }
 
+function displayGameOver(){
+  document.querySelector('.game-over').style.display = 'block';
+}
+
 function gameLoop(timestamp){
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  handleDrops(timestamp);
-  drawBottle();
-  requestAnimationFrame(gameLoop);
-  document.getElementById('score').innerText = 'Score: ' + score;
+  if(!gameOver){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    handleDrops(timestamp);
+    drawBottle();
+    requestAnimationFrame(gameLoop);
+    document.getElementById('score').innerText = 'Score: ' + score;
+  }
 }
 
 canvas.addEventListener('touchmove', moveBottle);
@@ -89,6 +101,7 @@ requestAnimationFrame(gameLoop);
 </script>
 
 <div id="score" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); font-size: 24px;">Score: 0</div>
+<div class="game-over">Game Over!</div>
 
 </body>
 </html>
