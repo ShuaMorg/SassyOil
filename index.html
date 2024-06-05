@@ -6,7 +6,7 @@
 <title>Edwyn's Sassy Oil</title>
 <style>
   body { margin: 0; overflow: hidden; }
-  #gameCanvas { background: #f3f3f3; display: block; margin: 0 auto; }
+  #gameCanvas { display: block; margin: 0 auto; }
   .game-over { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 48px; color: red; display: none; }
 </style>
 </head>
@@ -29,7 +29,10 @@ let lastTime = 0;
 let gameOver = false;
 
 const dropImage = new Image();
-dropImage.src = 'chilli.png'; // Update this to the path of your 128x128 .png file
+dropImage.src = 'path_to_your_image.png'; // Update this to the path of your 128x128 .png file
+
+const bgImage = new Image();
+bgImage.src = 'bg.png'; // Path to your background image
 
 class Drop {
   constructor(){
@@ -89,6 +92,7 @@ function displayGameOver(){
 function gameLoop(timestamp){
   if(!gameOver){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height); // Draw background image
     handleDrops(timestamp);
     drawBottle();
     requestAnimationFrame(gameLoop);
