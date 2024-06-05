@@ -29,7 +29,7 @@ let lastTime = 0;
 let gameOver = false;
 
 const dropImage = new Image();
-dropImage.src = 'path_to_your_image.png'; // Update this to the path of your 128x128 .png file
+dropImage.src = 'chilli.png'; // Update this to the path of your 128x128 .png file
 
 const bgImage = new Image();
 bgImage.src = 'bg.png'; // Path to your background image
@@ -38,7 +38,7 @@ class Drop {
   constructor(){
     this.x = Math.random() * canvas.width;
     this.y = 0;
-    this.size = 128; // Update the size to match the image dimensions
+    this.size = 64; // Half the size of the original image (128 / 2)
   }
 
   draw(){
@@ -100,8 +100,14 @@ function gameLoop(timestamp){
   }
 }
 
-canvas.addEventListener('touchmove', moveBottle);
-requestAnimationFrame(gameLoop);
+// Ensure images are fully loaded before starting the game loop
+bgImage.onload = () => {
+  dropImage.onload = () => {
+    canvas.addEventListener('touchmove', moveBottle);
+    requestAnimationFrame(gameLoop);
+  }
+};
+
 </script>
 
 <div id="score" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); font-size: 24px;">Score: 0</div>
@@ -109,3 +115,4 @@ requestAnimationFrame(gameLoop);
 
 </body>
 </html>
+
