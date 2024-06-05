@@ -6,7 +6,7 @@
 <title>Edwyn's Sassy Oil</title>
 <style>
   body { margin: 0; overflow: hidden; }
-  #gameCanvas { display: block; margin: 0 auto; }
+  #gameCanvas { background: #f3f3f3; display: block; margin: 0 auto; }
   .game-over { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 48px; color: red; display: none; }
 </style>
 </head>
@@ -31,14 +31,11 @@ let gameOver = false;
 const dropImage = new Image();
 dropImage.src = 'chilli.png'; // Update this to the path of your 128x128 .png file
 
-const bgImage = new Image();
-bgImage.src = 'bg.png'; // Path to your background image
-
 class Drop {
   constructor(){
     this.x = Math.random() * canvas.width;
     this.y = 0;
-    this.size = 64; // Half the size of the original image (128 / 2)
+    this.size = 128; // Update the size to match the image dimensions
   }
 
   draw(){
@@ -92,7 +89,6 @@ function displayGameOver(){
 function gameLoop(timestamp){
   if(!gameOver){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height); // Draw background image
     handleDrops(timestamp);
     drawBottle();
     requestAnimationFrame(gameLoop);
@@ -100,14 +96,8 @@ function gameLoop(timestamp){
   }
 }
 
-// Ensure images are fully loaded before starting the game loop
-bgImage.onload = () => {
-  dropImage.onload = () => {
-    canvas.addEventListener('touchmove', moveBottle);
-    requestAnimationFrame(gameLoop);
-  }
-};
-
+canvas.addEventListener('touchmove', moveBottle);
+requestAnimationFrame(gameLoop);
 </script>
 
 <div id="score" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); font-size: 24px;">Score: 0</div>
@@ -115,4 +105,3 @@ bgImage.onload = () => {
 
 </body>
 </html>
-
