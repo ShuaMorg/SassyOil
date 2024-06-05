@@ -116,6 +116,9 @@ function handleFlies(time){
       score -= 5;
       flies.splice(i, 1);
       i--;
+    } else if (flies[i].y > canvas.height) {
+      flies.splice(i, 1);
+      i--;
     }
   }
 }
@@ -157,7 +160,3 @@ bgImage.onload = function() {
 
 </body>
 </html>
-
-
-
-
