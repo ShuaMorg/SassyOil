@@ -28,18 +28,18 @@ let dropSpeed = 2;
 let lastTime = 0;
 let gameOver = false;
 
+const dropImage = new Image();
+dropImage.src = 'chilli.png'; // Update this to the path of your 128x128 .png file
+
 class Drop {
   constructor(){
     this.x = Math.random() * canvas.width;
     this.y = 0;
-    this.size = 20;
+    this.size = 128; // Update the size to match the image dimensions
   }
 
   draw(){
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-    ctx.fillStyle = 'red'; // Red chilli color
-    ctx.fill();
+    ctx.drawImage(dropImage, this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
   }
 
   update(){
