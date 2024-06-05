@@ -35,7 +35,7 @@ class Drop {
   constructor(){
     this.x = Math.random() * canvas.width;
     this.y = 0;
-    this.size = 128; // Update the size to match the image dimensions
+    this.size = 64; // Update the size to half of the original dimensions (128/2 = 64)
   }
 
   draw(){
@@ -105,3 +105,4 @@ requestAnimationFrame(gameLoop);
 
 </body>
 </html>
+
