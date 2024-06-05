@@ -24,25 +24,35 @@ const bottleHeight = 100;
 let bottleX = (canvas.width - bottleWidth) / 2;
 let score = 0;
 let drops = [];
+let flies = [];
 let dropSpeed = 2;
+let flySpeed = 2;
 let lastTime = 0;
+let lastFlyTime = 0;
 let gameOver = false;
 
-const dropImage = new Image();
-dropImage.src = 'chilli.png'; // Update this to the path of your 128x128 .png file
+const chilliImages = ['chilli.png', 'chilli2.png', 'chilli3.png', 'chilli4.png'].map(src => {
+  const img = new Image();
+  img.src = src;
+  return img;
+});
+
+const flyImage = new Image();
+flyImage.src = 'fly1.png'; // Path to your fly image
 
 const bgImage = new Image();
-bgImage.src = 'bg.png'; // Update this to the path of your 1920x1080 .png file
+bgImage.src = 'bg.png'; // Path to your background image
 
 class Drop {
   constructor(){
     this.x = Math.random() * canvas.width;
     this.y = 0;
     this.size = 64; // Update the size to half of the original dimensions (128/2 = 64)
+    this.image = chilliImages[Math.floor(Math.random() * chilliImages.length)];
   }
 
   draw(){
-    ctx.drawImage(dropImage, this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
+    ctx.drawImage(this.image, this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
   }
 
   update(){
@@ -53,9 +63,30 @@ class Drop {
   }
 }
 
+class Fly {
+  constructor(){
+    this.x = Math.random() * canvas.width;
+    this.y = 0;
+    this.size = 64; // Update the size to half of the original dimensions (128/2 = 64)
+    this.image = flyImage;
+  }
+
+  draw(){
+    ctx.drawImage(this.image, this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
+  }
+
+  update(){
+    this.y += flySpeed;
+    if(this.y > canvas.height){
+      flies.splice(flies.indexOf(this), 1); // Remove fly if it hits the ground
+    }
+  }
+}
+
 function handleDrops(time){
   if(time - lastTime > 8000){ // Increase speed every 20 seconds
     dropSpeed *= 1.1;
+    flySpeed *= 1.1;
     lastTime = time;
   }
   if(Math.random() > 0.99){
@@ -71,6 +102,22 @@ function handleDrops(time){
     } else if(drops[i].x > bottleX && drops[i].x < bottleX + bottleWidth && drops[i].y > canvas.height - bottleHeight){
       score++;
       drops.splice(i, 1);
+      i--;
+    }
+  }
+}
+
+function handleFlies(time){
+  if(time - lastFlyTime > 10000){ // Fly appears every 10 seconds
+    flies.push(new Fly());
+    lastFlyTime = time;
+  }
+  for(let i = 0; i < flies.length; i++){
+    flies[i].update();
+    flies[i].draw();
+    if(flies[i].x > bottleX && flies[i].x < bottleX + bottleWidth && flies[i].y > canvas.height - bottleHeight){
+      score -= 5;
+      flies.splice(i, 1);
       i--;
     }
   }
@@ -94,6 +141,7 @@ function gameLoop(timestamp){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height); // Draw the background image
     handleDrops(timestamp);
+    handleFlies(timestamp);
     drawBottle();
     requestAnimationFrame(gameLoop);
     document.getElementById('score').innerText = 'Score: ' + score;
@@ -112,5 +160,6 @@ bgImage.onload = function() {
 
 </body>
 </html>
+
 
 
