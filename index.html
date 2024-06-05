@@ -77,9 +77,6 @@ class Fly {
 
   update(){
     this.y += flySpeed;
-    if(this.y > canvas.height){
-      flies.splice(flies.indexOf(this), 1); // Remove fly if it hits the ground
-    }
   }
 }
 
@@ -160,6 +157,7 @@ bgImage.onload = function() {
 
 </body>
 </html>
+
 
 
 
