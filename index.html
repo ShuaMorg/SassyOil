@@ -5,13 +5,53 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Edwyn's Sassy Oil</title>
 <style>
-  body { margin: 0; overflow: hidden; }
+  body { margin: 0; overflow: hidden; background: url('bgplay.png') no-repeat center center fixed; background-size: cover; }
   #gameCanvas { display: block; margin: 0 auto; }
-  .game-over { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 48px; color: red; display: none; }
+  .game-over {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px; /* Width of the game over image */
+    height: 200px; /* Height of the game over image */
+    background: url('gameover.png') no-repeat center center;
+    background-size: contain;
+    display: none;
+  }
+  #resetButton {
+    position: absolute;
+    top: calc(50% - 250px); /* Adjust this value to position the reset button above the game over image */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px; /* Width of the reset image */
+    height: 200px; /* Height of the reset image */
+    background: url('reset.png') no-repeat center center;
+    background-size: contain;
+    cursor: pointer;
+    display: none;
+  }
+  #scoreContainer {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+  }
+  #chilliesImage {
+    width: 100px; /* Width of the chillies image */
+    height: 50px; /* Height of the chillies image */
+    background: url('chillies.png') no-repeat center center;
+    background-size: contain;
+    margin-right: 10px; /* Adjust the spacing between the image and the score */
+  }
 </style>
 </head>
 <body>
 <canvas id="gameCanvas"></canvas>
+<div id="resetButton"></div>
+<div class="game-over"></div>
 
 <script>
 const canvas = document.getElementById('gameCanvas');
@@ -149,6 +189,21 @@ function handleKeyDown(event) {
 
 function displayGameOver(){
   document.querySelector('.game-over').style.display = 'block';
+  document.getElementById('resetButton').style.display = 'block';
+}
+
+function resetGame() {
+  score = 0;
+  drops = [];
+  flies = [];
+  dropSpeed = 2;
+  flySpeed = 2;
+  lastTime = 0;
+  lastFlyTime = 0;
+  gameOver = false;
+  document.querySelector('.game-over').style.display = 'none';
+  document.getElementById('resetButton').style.display = 'none';
+  requestAnimationFrame(gameLoop);
 }
 
 function gameLoop(timestamp){
@@ -159,7 +214,7 @@ function gameLoop(timestamp){
     handleFlies(timestamp);
     drawBottle();
     requestAnimationFrame(gameLoop);
-    document.getElementById('score').innerText = 'Score: ' + score;
+    document.getElementById('score').innerText = score;
   }
 }
 
@@ -168,19 +223,26 @@ function startGame() {
   window.addEventListener('keydown', handleKeyDown);
   themeMusic.loop = true; // Loop the music
   themeMusic.play(); // Play the music
+  document.body.removeEventListener('click', startGame); // Remove the event listener after the game starts
   requestAnimationFrame(gameLoop);
 }
 
-bgImage.onload = function() {
-  document.body.addEventListener('click', startGame, { once: true });
-};
+// Listen for tap anywhere on the document body to start the game
+document.body.addEventListener('click', startGame);
+
+document.getElementById('resetButton').addEventListener('click', resetGame);
 
 </script>
 
-<div id="score" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); font-size: 24px;">Score: 0</div>
-<div class="game-over">Game Over!</div>
+<div id="scoreContainer">
+  <div id="chilliesImage"></div>
+  <div id="score">0</div>
+</div>
+<div id="resetButton"></div>
+<div class="game-over"></div>
 
 </body>
 </html>
+
 
 
