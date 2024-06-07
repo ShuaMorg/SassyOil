@@ -43,6 +43,9 @@ flyImage.src = 'fly1.png'; // Path to your fly image
 const bgImage = new Image();
 bgImage.src = 'bg.png'; // Path to your background image
 
+const bowlImage = new Image();
+bowlImage.src = 'bowl.png'; // Path to your bowl image
+
 class Drop {
   constructor(){
     this.x = Math.random() * canvas.width;
@@ -124,8 +127,9 @@ function handleFlies(time){
 }
 
 function drawBottle(){
-  ctx.fillStyle = '#000';
-  ctx.fillRect(bottleX, canvas.height - bottleHeight, bottleWidth, bottleHeight);
+  const bowlWidth = 100; // Adjust the width of the bowl image
+  const bowlHeight = 50; // Adjust the height of the bowl image
+  ctx.drawImage(bowlImage, bottleX, canvas.height - bowlHeight, bowlWidth, bowlHeight);
 }
 
 function moveBottle(event){
@@ -160,3 +164,4 @@ bgImage.onload = function() {
 
 </body>
 </html>
+
