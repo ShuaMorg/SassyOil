@@ -5,8 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Edwyn's Sassy Oil</title>
 <style>
-  body { margin: 0; overflow: hidden; background: url('bgplay.png') no-repeat center center fixed; background-size: cover; }
+  body { 
+    margin: 0; 
+    overflow: hidden; 
+    background: url('bgplay.png') no-repeat center center fixed; 
+    background-size: cover; 
+    font-family: 'Comic Sans MS', cursive; /* Apply Comic Sans MS font to the body */
+  }
   #gameCanvas { display: block; margin: 0 auto; }
+  #score {
+    font-size: 18px;
+    color: #333; /* Dark grey color */
+    transform: rotate(-15deg); /* Rotate the text 15 degrees anti-clockwise */
+  }
   .game-over {
     position: absolute;
     top: 50%;
@@ -243,6 +254,7 @@ document.getElementById('resetButton').addEventListener('click', resetGame);
 
 </body>
 </html>
+
 
 
 
