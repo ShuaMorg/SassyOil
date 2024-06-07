@@ -19,8 +19,8 @@ const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-const bottleWidth = 50;
-const bottleHeight = 100;
+const bottleWidth = 106;
+const bottleHeight = 214;
 let bottleX = (canvas.width - bottleWidth) / 2;
 let score = 0;
 let drops = [];
@@ -45,6 +45,8 @@ bgImage.src = 'bg.png'; // Path to your background image
 
 const bowlImage = new Image();
 bowlImage.src = 'bowl.png'; // Path to your bowl image
+
+const themeMusic = new Audio('theme.mp3'); // Path to your theme music
 
 class Drop {
   constructor(){
@@ -127,13 +129,22 @@ function handleFlies(time){
 }
 
 function drawBottle(){
-  const bowlWidth = 100; // Adjust the width of the bowl image
-  const bowlHeight = 50; // Adjust the height of the bowl image
-  ctx.drawImage(bowlImage, bottleX, canvas.height - bowlHeight, bowlWidth, bowlHeight);
+  ctx.drawImage(bowlImage, bottleX, canvas.height - bottleHeight, bottleWidth, bottleHeight);
 }
 
 function moveBottle(event){
-  bottleX = event.touches[0].clientX - bottleWidth / 2;
+  if (event.touches) {
+    bottleX = event.touches[0].clientX - bottleWidth / 2;
+  }
+}
+
+function handleKeyDown(event) {
+  const step = 20; // Define the movement step
+  if (event.key === 'ArrowLeft') {
+    bottleX = Math.max(0, bottleX - step);
+  } else if (event.key === 'ArrowRight') {
+    bottleX = Math.min(canvas.width - bottleWidth, bottleX + step);
+  }
 }
 
 function displayGameOver(){
@@ -152,9 +163,16 @@ function gameLoop(timestamp){
   }
 }
 
-bgImage.onload = function() {
+function startGame() {
   canvas.addEventListener('touchmove', moveBottle);
+  window.addEventListener('keydown', handleKeyDown);
+  themeMusic.loop = true; // Loop the music
+  themeMusic.play(); // Play the music
   requestAnimationFrame(gameLoop);
+}
+
+bgImage.onload = function() {
+  document.body.addEventListener('click', startGame, { once: true });
 };
 
 </script>
@@ -164,4 +182,5 @@ bgImage.onload = function() {
 
 </body>
 </html>
+
 
