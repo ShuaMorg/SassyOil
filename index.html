@@ -243,9 +243,12 @@ function handleDrops(time){
     }
   }
 
+
   function drawBottle(){
+  if (!gameOver) {
     ctx.drawImage(bowlImage, bottleX, canvas.height - bottleHeight, bottleWidth, bottleHeight);
   }
+}
 
   function moveBottle(event){
     if (event.touches) {
@@ -266,6 +269,7 @@ function handleDrops(time){
     document.querySelector('.game-over').style.display = 'block';
     document.querySelector('.game-over-oil').style.display = 'block'; // Show oil image
     document.getElementById('resetButton').style.display = 'block';
+    bowlImage.style.display = 'none'; // Hide bowl image
     saveScore("Player1", score); // Replace with actual username and score
   }
 
@@ -281,6 +285,7 @@ function handleDrops(time){
     document.querySelector('.game-over').style.display = 'none';
     document.querySelector('.game-over-oil').style.display = 'none'; // Hide oil image
     document.getElementById('resetButton').style.display = 'none';
+    bowlImage.style.display = 'block'; // Show bowl image
     requestAnimationFrame(gameLoop);
   }
 
@@ -311,8 +316,3 @@ function handleDrops(time){
 
 </body>
 </html>
-
-
-
-
-
