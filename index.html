@@ -5,44 +5,45 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Edwyn's Sassy Oil</title>
 <style>
-  body { 
+  body {  /*Puts the paper in the background*/
     margin: 0; 
     overflow: hidden; 
-    background: url('bgplay.png') no-repeat center center fixed; 
+    background: url('bgplay.png') no-repeat center center fixed;
     background-size: cover; 
     font-family: 'Comic Sans MS', cursive; 
   }
+
   #gameCanvas { display: block; margin: 0 auto; }
-  #score {
+
+  #score { /*Makes the score look right and puts it in the right place*/
     font-size: 18px;
     color: #333;
     transform: rotate(-15deg); 
   }
-  .game-over {
+
+  .game-over { /*Makes the "Game Over" look right and puts it in the right place*/
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 240px;
     height: 120px;
-    background: url('gameover.png') no-repeat center center;
+    background: url('gameover.png') no-repeat center center; 
     background-size: contain;
     display: none;
   }
 
-  .game-over-oil {
+  .game-over-oil {  /*Makes the "Oil" look right and puts it in the right place*/
     position: absolute;
-    top: 30%; /* Adjust the position as needed */
+    top: 30%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 180px; 
-    height: 120px; 
     display: none;
   }
 
-  #resetButton {
+  #resetButton { /*Makes the "Reset" look right and puts it in the right place*/
     position: absolute;
-    top: calc(50% + 150px); /* Adjust the distance below the game-over text */
+    top: calc(50% + 150px);
     left: 50%;
     transform: translate(-50%, -50%);
     width: 180px; 
@@ -52,6 +53,7 @@
     cursor: pointer;
     display: none;
   }
+
   #scoreContainer {
     position: absolute;
     top: 10px;
@@ -61,12 +63,24 @@
     display: flex;
     align-items: center;
   }
+
   #chilliesImage {
     width: 100px;
     height: 50px; 
     background: url('chillies.png') no-repeat center center;
     background-size: contain;
     margin-right: 10px; 
+  }
+
+  #pauseButton {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 50px;
+    height: 50px;
+    background: url('pause.png') no-repeat center center;
+    background-size: cover;
+    cursor: pointer;
   }
 </style>
 </head>
@@ -84,6 +98,8 @@
   <div id="chilliesImage"></div>
   <div id="score">0</div>
 </div>
+
+<div id="pauseButton"></div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -147,6 +163,7 @@
   let lastTime = 0;
   let lastFlyTime = 0;
   let gameOver = false;
+  let isPaused = false;
 
   const chilliImages = ['chilli.png', 'chilli2.png', 'chilli3.png', 'chilli4.png'].map(src => {
     const img = new Image();
@@ -198,33 +215,33 @@
     }
 
     update(){
-    this.y += flySpeed;
+      this.y += flySpeed;
+    }
   }
-}
 
-function handleDrops(time){
-  if(time - lastTime > 8000){ // Increase speed every 20 seconds
-      dropSpeed *= 1.1;
-      flySpeed *= 1.1;
-      lastTime = time;
-    }
-    if(Math.random() > 0.99){
-      drops.push(new Drop());
-    }
-    for(let i = 0; i < drops.length; i++){
-      drops[i].update();
-      drops[i].draw();
-      if(gameOver){
-        drops = []; 
-        displayGameOver();
-        return;
-      } else if(drops[i].x > bottleX && drops[i].x < bottleX + bottleWidth && drops[i].y > canvas.height - bottleHeight){
-        score++;
-        drops.splice(i, 1);
-        i--;
+  function handleDrops(time){
+    if(time - lastTime > 8000){ // Increase speed every 20 seconds
+        dropSpeed *= 1.1;
+        flySpeed *= 1.1;
+        lastTime = time;
+      }
+      if(Math.random() > 0.99){
+        drops.push(new Drop());
+      }
+      for(let i = 0; i < drops.length; i++){
+        drops[i].update();
+        drops[i].draw();
+        if(gameOver){
+          drops = []; 
+          displayGameOver();
+          return;
+        } else if(drops[i].x > bottleX && drops[i].x < bottleX + bottleWidth && drops[i].y > canvas.height - bottleHeight){
+          score++;
+          drops.splice(i, 1);
+          i--;
+        }
       }
     }
-  }
 
   function handleFlies(time){
     if(time - lastFlyTime > 10000){ 
@@ -245,12 +262,11 @@ function handleDrops(time){
     }
   }
 
-
   function drawBottle(){
-  if (!gameOver) {
-    ctx.drawImage(bowlImage, bottleX, canvas.height - bottleHeight, bottleWidth, bottleHeight);
+    if (!gameOver) {
+      ctx.drawImage(bowlImage, bottleX, canvas.height - bottleHeight, bottleWidth, bottleHeight);
+    }
   }
-}
 
   function moveBottle(event){
     if (event.touches) {
@@ -291,8 +307,21 @@ function handleDrops(time){
     requestAnimationFrame(gameLoop);
   }
 
+  function togglePause() {
+    isPaused = !isPaused;
+    document.getElementById('pauseButton').style.backgroundImage = isPaused ? 'url("play.png")' : 'url("pause.png")';
+    if (!isPaused) {
+      requestAnimationFrame(gameLoop);
+    }
+  }
+
+  document.getElementById('pauseButton').addEventListener('click', function(event) {
+    event.stopPropagation(); // Prevent click event from reaching the body
+    togglePause();
+  });
+
   function gameLoop(timestamp){
-    if(!gameOver){
+    if(!gameOver && !isPaused){
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
       handleDrops(timestamp);
@@ -318,4 +347,5 @@ function handleDrops(time){
 
 </body>
 </html>
+
 
